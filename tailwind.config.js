@@ -16,7 +16,7 @@ module.exports = {
       black: "#000",
       white: "#fff",
       midnight: "#0A2647",
-      sky: "#144272",
+      sky: "#0f172a",
       error: "#b91c1c",
       success: "#16a34a",
       gray: "#374151",
