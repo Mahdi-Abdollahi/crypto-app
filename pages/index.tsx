@@ -1,13 +1,14 @@
 import React from "react";
-import { GetServerSideProps, NextPage } from "next";
+import { GetStaticProps, NextPage } from "next";
 import CoinsList from "../components/CoinsList";
 import { dehydrate, QueryClient } from "@tanstack/react-query";
 import { getCurrenciesDetails } from "./api/currencies";
-import { Query } from "../types";
+import { Currency } from "../types";
 
-export const getServerSideProps: GetServerSideProps = async ({ query }) => {
+export const getStaticProps: GetStaticProps = async ({ query }) => {
   const queryClient = new QueryClient();
-  await queryClient.prefetchQuery(["currenciesDetails"], () =>
+  // Store as CurrenciesDetails with page number(1 as default first request) and vs_currency(usd as default in first request)
+  await queryClient.prefetchQuery<Currency[]>(["currenciesDetails"], () =>
     getCurrenciesDetails()
   );
   return {

@@ -6,22 +6,18 @@ import {
   getCurrenciesDetails,
   getCurrenciesList,
 } from "../pages/api/currencies";
-import { Query } from "../types";
+import { addCommaToPrice, checkNumberSign } from "../utils/helper";
 import Selector from "./Selector";
-
-const checkNumberSign = (number: number) =>
-  Math.sign(number) === 0 || Math.sign(number) === -1 ? false : true;
-
-function addCommaToPrice(number: number) {
-  if (number) return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  return 0;
-}
 
 export default function CoinsList() {
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [vsCurrenecy, setVsCurrenecy] = useState("usd");
+
   const myRef = useRef<HTMLElement>(null);
+
+  // Queries
+
   const {
     data: currenciesDetails = [],
     isLoading: isCurrenciesDetailsLoading,
@@ -34,32 +30,37 @@ export default function CoinsList() {
     () => getCurrenciesDetails(currentPage, vsCurrenecy),
     { keepPreviousData: true }
   );
-  const {
-    data: currenciesList = [],
-    isLoading: isCurrenciesListLoading,
-    isError: isCurrencieslistError,
-  } = useQuery(["currenciesList"], getCurrenciesList);
 
+  const { data: currenciesList = [], isLoading } = useQuery(
+    ["currenciesList"],
+    getCurrenciesList
+  );
+
+  // Handlers
   const handleRowClick = (currencyId: string) => {
     router.push(`/currencies/${currencyId}`);
   };
+
   const scrollToTop = () => {
     if (myRef.current) myRef.current.scrollIntoView({ behavior: "smooth" });
   };
+
   const nextPageHandler = () => {
     setCurrentPage((previousState: number) => previousState + 1);
     scrollToTop();
   };
+
   const previousPageHandler = () => {
     setCurrentPage((previousState: number) => previousState - 1);
     scrollToTop();
   };
 
-  console.log("vsCurrenecy: ", vsCurrenecy);
-
   return (
     <main ref={myRef} className="bg-sky w-full p-4 overflow-hidden">
-      <Selector options={currenciesList} changeVsCurrency={setVsCurrenecy} />
+      <Selector
+        options={currenciesList}
+        changeVsCurrency={(option) => setVsCurrenecy(option)}
+      />
 
       {isCurrenciesDetailsLoading && <h3 className="text-white">Loading...</h3>}
       {isCurrenciesDetailsError && <h3 className="text-error">Error</h3>}
@@ -109,7 +110,7 @@ export default function CoinsList() {
                       <p className="text-gray">{currency.symbol}</p>
                     </div>
                   </td>
-                  <td>${addCommaToPrice(currency.current_price)}</td>
+                  <td>{"$" + addCommaToPrice(currency.current_price)}</td>
                   <td>
                     <div
                       className={`flex flex-row justify-items-center ${
