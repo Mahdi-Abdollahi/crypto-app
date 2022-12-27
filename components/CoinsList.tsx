@@ -7,9 +7,11 @@ import {
   getCurrenciesList,
 } from "../pages/api/currencies";
 import { addCommaToPrice, checkNumberSign } from "../utils/helper";
+import Button from "./Button";
 import Selector from "./Selector";
 
 export default function CoinsList() {
+  console.log("RE-RENDER");
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [vsCurrenecy, setVsCurrenecy] = useState("usd");
@@ -25,12 +27,12 @@ export default function CoinsList() {
     error: currenciesDetailsError,
     isPreviousData,
     isFetching,
-  } = useQuery(
-    ["currenciesDetails", currentPage, vsCurrenecy],
-    () => getCurrenciesDetails(currentPage, vsCurrenecy),
-    { keepPreviousData: true }
-  );
-
+  } = useQuery({
+    queryKey: ["currenciesDetails", currentPage, vsCurrenecy],
+    queryFn: () => getCurrenciesDetails(currentPage, vsCurrenecy),
+    staleTime: 1000,
+    keepPreviousData: true,
+  });
   const { data: currenciesList = [], isLoading } = useQuery(
     ["currenciesList"],
     getCurrenciesList
@@ -64,6 +66,7 @@ export default function CoinsList() {
 
       {isCurrenciesDetailsLoading && <h3 className="text-white">Loading...</h3>}
       {isCurrenciesDetailsError && <h3 className="text-error">Error</h3>}
+
       {currenciesDetails?.length && (
         <table className="table-focus border-separate border-spacing-y-3 w-full text-left">
           <thead>
@@ -97,12 +100,13 @@ export default function CoinsList() {
                     {index + 1 + (currentPage - 1) * 20}
                   </td>
                   <td className="flex flex-row items-center">
-                    <div>
+                    <div className="w-7 h-7">
                       <Image
                         src={currency.image}
                         alt="currency-logo"
                         width={30}
                         height={30}
+                        className="w-7 h-7"
                       />
                     </div>
                     <div className="flex flex-col items-start ml-2">
@@ -117,12 +121,15 @@ export default function CoinsList() {
                         priceChangeIn24HoursSign ? "text-success" : "text-error"
                       }`}
                     >
-                      <Image
-                        src="/images/increase.svg"
-                        alt="up"
-                        width={16}
-                        height={16}
-                      />
+                      <div>
+                        <Image
+                          src="/images/increase.svg"
+                          alt="up"
+                          width={16}
+                          height={16}
+                          className="w-4 w-4"
+                        />
+                      </div>
                       <p>
                         {currency.price_change_percentage_24h_in_currency.toFixed(
                           4
@@ -136,12 +143,15 @@ export default function CoinsList() {
                         priceChangeIn7DaysSign ? "text-success" : "text-error"
                       }`}
                     >
-                      <Image
-                        src="/images/decrease.svg"
-                        alt="up"
-                        width={16}
-                        height={16}
-                      />
+                      <div>
+                        <Image
+                          src="/images/decrease.svg"
+                          alt="up"
+                          width={16}
+                          height={16}
+                          className="w-4 w-4"
+                        />
+                      </div>
                       <p>
                         {currency.price_change_percentage_7d_in_currency.toFixed(
                           4
@@ -149,13 +159,15 @@ export default function CoinsList() {
                       </p>
                     </div>
                   </td>
-                  <td>${addCommaToPrice(currency.market_cap)}</td>
-                  <td>${addCommaToPrice(currency.total_volume)}</td>
+                  <td>{"$" + addCommaToPrice(currency.market_cap)}</td>
+                  <td>{"$" + addCommaToPrice(currency.total_volume)}</td>
                   <td className="rounded-r">
-                    {addCommaToPrice(currency.circulating_supply)}{" "}
-                    <span className="text-gray">
-                      {currency.symbol.toUpperCase()}
-                    </span>
+                    <>
+                      {addCommaToPrice(currency.circulating_supply)}
+                      <span className="text-gray">
+                        {currency.symbol.toUpperCase()}
+                      </span>
+                    </>
                   </td>
                 </tr>
               );
@@ -164,21 +176,19 @@ export default function CoinsList() {
         </table>
       )}
       <div className="w-4/6 mx-auto flex flex-row items-center justify-between mt-6">
-        <button
-          onClick={previousPageHandler}
-          disabled={currentPage === 1}
-          className="w-20 rounded border text-white disabled:text-gray border-gray"
-        >
-          {"<" + "Previous"}
-        </button>
+        <Button
+          handler={previousPageHandler}
+          text="<Previous"
+          isDisabled={currentPage === 1}
+          classes="w-20 rounded border text-white disabled:text-gray border-gray"
+        />
         <div className="text-white">{currentPage}</div>
-        <button
-          onClick={nextPageHandler}
-          disabled={currenciesDetails?.length < 20}
-          className="w-20 rounded border text-white disabled:text-gray border-gray"
-        >
-          {"Next" + ">"}
-        </button>
+        <Button
+          handler={nextPageHandler}
+          text="Next>"
+          isDisabled={currenciesDetails?.length < 20}
+          classes="w-20 rounded border text-white disabled:text-gray border-gray"
+        />
       </div>
     </main>
   );
