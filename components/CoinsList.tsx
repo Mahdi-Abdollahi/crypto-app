@@ -9,16 +9,16 @@ import {
 import { addCommaToPrice, checkNumberSign } from "../utils/helper";
 import Button from "./Button";
 import Selector from "./Selector";
+import { AiOutlineDown } from "react-icons/ai";
+import { AiOutlineUp } from "react-icons/ai";
 
 export default function CoinsList() {
-  const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [vsCurrenecy, setVsCurrenecy] = useState("usd");
 
   const myRef = useRef<HTMLElement>(null);
 
   // Queries
-
   const {
     data: currenciesDetails = [],
     isLoading: isCurrenciesDetailsLoading,
@@ -129,19 +129,15 @@ export default function CoinsList() {
                   <td>{"$" + addCommaToPrice(currency.current_price)}</td>
                   <td>
                     <div
-                      className={`flex flex-row justify-items-center ${
+                      className={`flex flex-row justify-content-center items-center ${
                         priceChangeIn24HoursSign ? "text-success" : "text-error"
                       }`}
                     >
-                      <div>
-                        <Image
-                          src="/images/increase.svg"
-                          alt="up"
-                          width={16}
-                          height={16}
-                          className="w-4 w-4"
-                        />
-                      </div>
+                      {priceChangeIn24HoursSign ? (
+                        <AiOutlineUp className="text-success" />
+                      ) : (
+                        <AiOutlineDown className="text-error" />
+                      )}
                       <p>
                         {currency.price_change_percentage_24h_in_currency.toFixed(
                           4
@@ -151,18 +147,16 @@ export default function CoinsList() {
                   </td>
                   <td>
                     <div
-                      className={`flex flex-row justify-items-center ${
+                      className={`flex flex-row justify-content-center items-center ${
                         priceChangeIn7DaysSign ? "text-success" : "text-error"
                       }`}
                     >
                       <div>
-                        <Image
-                          src="/images/decrease.svg"
-                          alt="up"
-                          width={16}
-                          height={16}
-                          className="w-4 w-4"
-                        />
+                        {priceChangeIn7DaysSign ? (
+                          <AiOutlineUp className="text-success" />
+                        ) : (
+                          <AiOutlineDown className="text-error" />
+                        )}
                       </div>
                       <p>
                         {currency.price_change_percentage_7d_in_currency.toFixed(
