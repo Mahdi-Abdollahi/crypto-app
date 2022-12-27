@@ -11,6 +11,7 @@ import Button from "./Button";
 import Selector from "./Selector";
 import { AiOutlineDown } from "react-icons/ai";
 import { AiOutlineUp } from "react-icons/ai";
+import Pagination from "./Pagination";
 
 export default function CoinsList() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -75,6 +76,7 @@ export default function CoinsList() {
       <Selector
         options={selectorOptions}
         changeVsCurrency={changeVsCurrencyHandler}
+        selectedOption={vsCurrenecy}
       />
 
       {isCurrenciesDetailsLoading && <h3 className="text-white">Loading...</h3>}
@@ -181,21 +183,17 @@ export default function CoinsList() {
           </tbody>
         </table>
       )}
-      <div className="w-4/6 mx-auto flex flex-row items-center justify-between mt-6">
-        <Button
-          handler={previousPageHandler}
-          text="<Previous"
-          isDisabled={currentPage === 1}
-          classes="w-20 rounded border text-white disabled:text-gray border-gray"
-        />
-        <div className="text-white">{currentPage}</div>
-        <Button
-          handler={nextPageHandler}
-          text="Next>"
-          isDisabled={currenciesDetails?.length < 20}
-          classes="w-20 rounded border text-white disabled:text-gray border-gray"
-        />
-      </div>
+      <Pagination
+        currentPage={currentPage}
+        previousPageHandler={previousPageHandler}
+        nextPageHandler={nextPageHandler}
+        isNextButtonDisabled={currenciesDetails?.length < 20}
+        isPrevButtonDisabled={currentPage === 1}
+        nextButtonText="Next>"
+        prevButtonText="<Previous"
+        nextButtonClasses="w-20 rounded border text-white disabled:text-gray border-gray"
+        prevButtonClasses="w-20 rounded border text-white disabled:text-gray border-gray"
+      />
     </main>
   );
 }

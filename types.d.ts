@@ -23,3 +23,15 @@ export interface Button {
   isDisabled: boolean;
   classes?: string;
 }
+
+export interface Pagination {
+  currentPage: number;
+  previousPageHandler: () => void;
+  nextPageHandler: () => void;
+  isNextButtonDisabled: boolean;
+  isPrevButtonDisabled: boolean;
+  nextButtonText: string;
+  prevButtonText: string;
+  nextButtonClasses: string;
+  prevButtonClasses: string;
+}
