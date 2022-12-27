@@ -57,6 +57,8 @@ export default function CoinsList() {
     scrollToTop();
   };
 
+  console.log(currenciesDetails);
+
   return (
     <main ref={myRef} className="bg-sky w-full p-4 overflow-hidden">
       <Selector
