@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { memo, useState } from "react";
 
 const Selector = ({
   options,
@@ -7,6 +7,7 @@ const Selector = ({
   options: string[];
   changeVsCurrency: (option: string) => void;
 }) => {
+  console.log("SELECTOR");
   const [isExpanded, setIsExpanded] = useState(false);
   const selectOptionHandler = (option: string) => {
     changeVsCurrency(option);
@@ -37,4 +38,4 @@ const Selector = ({
   );
 };
 
-export default Selector;
+export default memo(Selector);

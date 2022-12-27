@@ -1,7 +1,8 @@
-import React from "react";
+import React, { memo } from "react";
 import { Button } from "../types";
 
 const Button = ({ handler, isDisabled, classes, text }: Button) => {
+  console.log("render");
   return (
     <button onClick={handler} disabled={isDisabled} className={classes}>
       {text}
@@ -9,4 +10,4 @@ const Button = ({ handler, isDisabled, classes, text }: Button) => {
   );
 };
 
-export default Button;
+export default memo(Button);

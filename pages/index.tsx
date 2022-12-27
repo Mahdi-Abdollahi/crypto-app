@@ -4,6 +4,7 @@ import CoinsList from "../components/CoinsList";
 import { dehydrate, QueryClient } from "@tanstack/react-query";
 import { getCurrenciesDetails } from "./api/currencies";
 import { Currency } from "../types";
+import Head from "next/head";
 
 export const getStaticProps: GetStaticProps = async () => {
   const queryClient = new QueryClient();
@@ -20,7 +21,15 @@ export const getStaticProps: GetStaticProps = async () => {
 };
 
 const Home: NextPage = () => {
-  return <CoinsList />;
+  return (
+    <>
+      <Head>
+        <title>Crypto App</title>
+        <meta property="og:title" content="Crypto App" key="title" />
+      </Head>
+      <CoinsList />
+    </>
+  );
 };
 
 export default Home;

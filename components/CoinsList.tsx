@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback, useMemo } from "react";
 import {
   getCurrenciesDetails,
   getCurrenciesList,
@@ -30,13 +30,26 @@ export default function CoinsList() {
   } = useQuery({
     queryKey: ["currenciesDetails", currentPage, vsCurrenecy],
     queryFn: () => getCurrenciesDetails(currentPage, vsCurrenecy),
-    staleTime: 1000,
     keepPreviousData: true,
+    // Refetch data at 1 minute frequency(Get Updated data of Coins)
+    refetchInterval: 60 * 1000,
   });
-  const { data: currenciesList = [], isLoading } = useQuery(
-    ["currenciesList"],
-    getCurrenciesList
-  );
+
+  const { data: currenciesList = [], isLoading: currenciesListIsloading } =
+    useQuery({
+      queryKey: ["currenciesList"],
+      queryFn: getCurrenciesList,
+      staleTime: 360 * 1000,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+    });
+
+  const selectorOptions = useMemo(() => {
+    if (currenciesListIsloading) {
+      return [];
+    }
+    return [...currenciesList];
+  }, [currenciesList]);
 
   // Handlers
   const handleRowClick = (currencyId: string) => {
@@ -47,23 +60,25 @@ export default function CoinsList() {
     if (myRef.current) myRef.current.scrollIntoView({ behavior: "smooth" });
   };
 
-  const nextPageHandler = () => {
+  const nextPageHandler = useCallback(() => {
     setCurrentPage((previousState: number) => previousState + 1);
     scrollToTop();
-  };
+  }, []);
 
-  const previousPageHandler = () => {
+  const previousPageHandler = useCallback(() => {
     setCurrentPage((previousState: number) => previousState - 1);
     scrollToTop();
-  };
+  }, []);
 
-  console.log(currenciesDetails);
+  const changeVsCurrencyHandler = useCallback((option: string) => {
+    setVsCurrenecy(option);
+  }, []);
 
   return (
     <main ref={myRef} className="bg-sky w-full p-4 overflow-hidden">
       <Selector
-        options={currenciesList}
-        changeVsCurrency={(option) => setVsCurrenecy(option)}
+        options={selectorOptions}
+        changeVsCurrency={changeVsCurrencyHandler}
       />
 
       {isCurrenciesDetailsLoading && <h3 className="text-white">Loading...</h3>}
