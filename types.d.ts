@@ -12,11 +12,6 @@ export interface Currency {
   last_updated?: string;
 }
 
-export interface Query {
-  page?: string;
-  vs_currency?: string;
-}
-
 export interface Button {
   handler: () => void;
   text: string;
