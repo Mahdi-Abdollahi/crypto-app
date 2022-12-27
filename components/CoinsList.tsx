@@ -7,6 +7,7 @@ import {
   getCurrenciesList,
 } from "../pages/api/currencies";
 import { Query } from "../types";
+import Selector from "./Selector";
 
 const checkNumberSign = (number: number) =>
   Math.sign(number) === 0 || Math.sign(number) === -1 ? false : true;
@@ -19,6 +20,7 @@ function addCommaToPrice(number: number) {
 export default function CoinsList() {
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
+  const [vsCurrenecy, setVsCurrenecy] = useState("usd");
   const myRef = useRef<HTMLElement>(null);
   const {
     data: currenciesDetails = [],
@@ -28,17 +30,16 @@ export default function CoinsList() {
     isPreviousData,
     isFetching,
   } = useQuery(
-    ["currenciesDetails", currentPage, "usd"],
-    () => getCurrenciesDetails(currentPage, "usd"),
+    ["currenciesDetails", currentPage, vsCurrenecy],
+    () => getCurrenciesDetails(currentPage, vsCurrenecy),
     { keepPreviousData: true }
   );
-
   const {
     data: currenciesList = [],
     isLoading: isCurrenciesListLoading,
     isError: isCurrencieslistError,
   } = useQuery(["currenciesList"], getCurrenciesList);
-  console.log(currenciesList);
+
   const handleRowClick = (currencyId: string) => {
     router.push(`/currencies/${currencyId}`);
   };
@@ -54,8 +55,12 @@ export default function CoinsList() {
     scrollToTop();
   };
 
+  console.log("vsCurrenecy: ", vsCurrenecy);
+
   return (
     <main ref={myRef} className="bg-sky w-full p-4 overflow-hidden">
+      <Selector options={currenciesList} changeVsCurrency={setVsCurrenecy} />
+
       {isCurrenciesDetailsLoading && <h3 className="text-white">Loading...</h3>}
       {isCurrenciesDetailsError && <h3 className="text-error">Error</h3>}
       {currenciesDetails?.length && (
