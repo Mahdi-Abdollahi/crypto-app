@@ -1,7 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { getCurrencies } from "../pages";
+import { useState, useRef } from "react";
+import {
+  getCurrenciesDetails,
+  getCurrenciesList,
+} from "../pages/api/currencies";
+import { Query } from "../types";
 
 const checkNumberSign = (number: number) =>
   Math.sign(number) === 0 || Math.sign(number) === -1 ? false : true;
@@ -12,22 +17,48 @@ function addCommaToPrice(number: number) {
 }
 
 export default function CoinsList() {
-  const {
-    data: currencies,
-    isLoading,
-    isError,
-    error,
-  } = useQuery(["currencies"], getCurrencies);
   const router = useRouter();
-  const handleRowClick = (currencyId: number) => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const myRef = useRef<HTMLElement>(null);
+  const {
+    data: currenciesDetails = [],
+    isLoading: isCurrenciesDetailsLoading,
+    isError: isCurrenciesDetailsError,
+    error: currenciesDetailsError,
+    isPreviousData,
+    isFetching,
+  } = useQuery(
+    ["currenciesDetails", currentPage, "usd"],
+    () => getCurrenciesDetails(currentPage, "usd"),
+    { keepPreviousData: true }
+  );
+
+  const {
+    data: currenciesList = [],
+    isLoading: isCurrenciesListLoading,
+    isError: isCurrencieslistError,
+  } = useQuery(["currenciesList"], getCurrenciesList);
+  console.log(currenciesList);
+  const handleRowClick = (currencyId: string) => {
     router.push(`/currencies/${currencyId}`);
+  };
+  const scrollToTop = () => {
+    if (myRef.current) myRef.current.scrollIntoView({ behavior: "smooth" });
+  };
+  const nextPageHandler = () => {
+    setCurrentPage((previousState: number) => previousState + 1);
+    scrollToTop();
+  };
+  const previousPageHandler = () => {
+    setCurrentPage((previousState: number) => previousState - 1);
+    scrollToTop();
   };
 
   return (
-    <main className="bg-sky w-full p-4 overflow-hidden">
-      {isLoading && <h3 className="text-white">Loading...</h3>}
-      {isError && <h3 className="text-error">Error: {error?.message}</h3>}
-      {currencies?.length && (
+    <main ref={myRef} className="bg-sky w-full p-4 overflow-hidden">
+      {isCurrenciesDetailsLoading && <h3 className="text-white">Loading...</h3>}
+      {isCurrenciesDetailsError && <h3 className="text-error">Error</h3>}
+      {currenciesDetails?.length && (
         <table className="table-focus border-separate border-spacing-y-3 w-full text-left">
           <thead>
             <tr className="text-gray">
@@ -42,7 +73,7 @@ export default function CoinsList() {
             </tr>
           </thead>
           <tbody>
-            {currencies.map((currency, index) => {
+            {currenciesDetails.map((currency, index) => {
               const priceChangeIn24HoursSign = checkNumberSign(
                 currency.price_change_percentage_24h_in_currency
               );
@@ -55,7 +86,10 @@ export default function CoinsList() {
                   className="text-white  hover:bg-gray cursor-pointer"
                   key={currency.id}
                 >
-                  <td className="rounded-l">{index + 1}</td>
+                  <td className="rounded-l font-bold">
+                    {/* Find index of coins by page number */}
+                    {index + 1 + (currentPage - 1) * 20}
+                  </td>
                   <td className="flex flex-row items-center">
                     <div>
                       <Image
@@ -123,6 +157,23 @@ export default function CoinsList() {
           </tbody>
         </table>
       )}
+      <div className="w-4/6 mx-auto flex flex-row items-center justify-between mt-6">
+        <button
+          onClick={previousPageHandler}
+          disabled={currentPage === 1}
+          className="w-20 rounded border text-white disabled:text-gray border-gray"
+        >
+          {"<" + "Previous"}
+        </button>
+        <div className="text-white">{currentPage}</div>
+        <button
+          onClick={nextPageHandler}
+          disabled={currenciesDetails?.length < 20}
+          className="w-20 rounded border text-white disabled:text-gray border-gray"
+        >
+          {"Next" + ">"}
+        </button>
+      </div>
     </main>
   );
 }
