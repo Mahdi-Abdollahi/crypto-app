@@ -75,7 +75,7 @@ export default function CoinsList() {
     <main ref={myRef} className="bg-sky w-full p-4 overflow-x-auto">
       <Selector
         options={selectorOptions}
-        changeVsCurrency={changeVsCurrencyHandler}
+        onSelectOption={changeVsCurrencyHandler}
         selectedOption={vsCurrenecy}
       />
 

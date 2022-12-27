@@ -2,17 +2,17 @@ import React, { memo, useState } from "react";
 
 const Selector = ({
   options,
-  changeVsCurrency,
+  onSelectOption,
   selectedOption,
 }: {
   options: string[];
-  changeVsCurrency: (option: string) => void;
+  onSelectOption: (option: string) => void;
   selectedOption: string | null;
 }) => {
   console.log("SELECTOR");
   const [isExpanded, setIsExpanded] = useState(false);
   const selectOptionHandler = (option: string) => {
-    changeVsCurrency(option);
+    onSelectOption(option);
     setIsExpanded((prevState) => !prevState);
   };
   return (
