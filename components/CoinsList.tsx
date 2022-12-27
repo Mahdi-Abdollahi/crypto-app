@@ -11,7 +11,6 @@ import Button from "./Button";
 import Selector from "./Selector";
 
 export default function CoinsList() {
-  console.log("RE-RENDER");
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [vsCurrenecy, setVsCurrenecy] = useState("usd");
@@ -52,9 +51,6 @@ export default function CoinsList() {
   }, [currenciesList]);
 
   // Handlers
-  const handleRowClick = (currencyId: string) => {
-    router.push(`/currencies/${currencyId}`);
-  };
 
   const scrollToTop = () => {
     if (myRef.current) myRef.current.scrollIntoView({ behavior: "smooth" });
@@ -75,7 +71,7 @@ export default function CoinsList() {
   }, []);
 
   return (
-    <main ref={myRef} className="bg-sky w-full p-4 overflow-hidden">
+    <main ref={myRef} className="bg-sky w-full p-4 overflow-x-auto">
       <Selector
         options={selectorOptions}
         changeVsCurrency={changeVsCurrencyHandler}
@@ -108,7 +104,6 @@ export default function CoinsList() {
               );
               return (
                 <tr
-                  onClick={() => handleRowClick(currency.id)}
                   className="text-white  hover:bg-gray cursor-pointer"
                   key={currency.id}
                 >
