@@ -77,6 +77,8 @@ export default function CoinsList() {
         options={selectorOptions}
         onSelectOption={changeVsCurrencyHandler}
         selectedOption={vsCurrenecy}
+        selectorText="Select Vs Currency"
+        classes="w-full md:w-2/6"
       />
 
       {isCurrenciesDetailsLoading && <h3 className="text-white">Loading...</h3>}
