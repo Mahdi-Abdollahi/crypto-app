@@ -1,4 +1,4 @@
-Check the Demo here: [demo]("https://crypto-app-gules.vercel.app/")
+Check the Demo here: ("https://crypto-app-gules.vercel.app/")
 
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
